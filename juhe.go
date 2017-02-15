@@ -79,18 +79,14 @@ func (icc *IDCardChecker) get(idCard, realName string) (err error) {
 	icc.params.Add("idcard", idCard)
 	icc.params.Add("realname", realName)
 	icc.juheURL.RawQuery = icc.params.Encode()
-	println("request url =>", icc.juheURL.String())
 	icc.resp, err = http.Get(icc.juheURL.String())
 	if err != nil {
-		println("request error:", err.Error())
 		return
 	}
 	defer icc.resp.Body.Close()
 	if icc.buf, err = ioutil.ReadAll(icc.resp.Body); err != nil {
-		println("GET => read response error:", err.Error())
 		return
 	}
-	println("GET => response data:", string(icc.buf))
 	return
 }
 
@@ -103,10 +99,8 @@ func (icc *IDCardChecker) post(idCard, realName string) (err error) {
 	}
 	defer icc.resp.Body.Close()
 	if icc.buf, err = ioutil.ReadAll(icc.resp.Body); err != nil {
-		println("POST => read response error:", err.Error())
 		return
 	}
-	println("GET => response data:", string(icc.buf))
 	return
 }
 
@@ -114,7 +108,6 @@ func (icc *IDCardChecker) parse() (pass bool, err error) {
 	if icc.buf == nil || len(icc.buf) == 0 {
 		return false, ErrorNoData
 	}
-	println("juhe response data =>", string(icc.buf))
 	if err = json.Unmarshal(icc.buf, icc.JuheData); err != nil {
 		return
 	}
