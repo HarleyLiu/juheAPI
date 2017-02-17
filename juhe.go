@@ -37,7 +37,8 @@ const (
 )
 
 //New make a IdCardChecker
-func New(requestURL, requestKey string) (icc *IDCardChecker, err error) {
+func New(requestURL, requestKey string, maxRequest uint8) (icc *IDCardChecker, err error) {
+	maxRequestCount = maxRequest
 	if requestKey == "" {
 		return nil, ParamErrorNoKey
 	}
@@ -122,16 +123,22 @@ func (icc *IDCardChecker) parse() (pass bool, err error) {
 }
 
 //Check check idcard and name by juhe
-func (icc *IDCardChecker) Check(mtd Method, idCard, realName string) (pass bool, err error) {
+func (icc *IDCardChecker) Check(mtd Method, userId, idCard, realName string) (pass bool, err error) {
 	if mtd != GET && mtd != POST {
 		return false, ParamErrorWrongMethod
 	}
 	if realName == "" {
 		return false, ParamErrorNoRealName
 	}
+	if userId == "" {
+		return false, ParamErrorNoUserId
+	}
+	//check request count
+	if err = isMoreRequst(userId); err != nil {
+		return false, err
+	}
 	//check length
-	// if len(idCard) != 15 && len(idCard) != 18 {
-	if len(idCard) != 18 {
+	if len(idCard) != 18 { //consider	len(idCard)==15
 		return false, ParamErrorWrongIdCard
 	}
 	//check format
@@ -146,7 +153,6 @@ func (icc *IDCardChecker) Check(mtd Method, idCard, realName string) (pass bool,
 	} else {
 		return false, ErrorUnknow
 	}
-
 	//analyze result
 	if pass, err = icc.parse(); err != nil {
 		return

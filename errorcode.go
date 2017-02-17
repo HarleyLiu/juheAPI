@@ -12,10 +12,14 @@ var (
 	ParamErrorNoKey       = errors.New("参数错误:无请求key")
 	ParamErrorNoRealName  = errors.New("参数错误:无姓名")
 	ParamErrorWrongIdCard = errors.New("参数错误:身份证格式错误")
+	ParamErrorNoUserId    = errors.New("参数错误:无用户id")
 
 	ErrorNoData    = errors.New("无返回数据")
 	ErrorUnknow    = errors.New("未知错误")
 	ErrorCheckFail = errors.New("校验失败")
+
+	ErrorMoreRequest = errors.New("频繁查询")
+	ErrorNoRequestID = errors.New("未设置用户id")
 )
 
 // 服务级错误码参照(error_code)：
