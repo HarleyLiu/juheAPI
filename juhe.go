@@ -48,7 +48,7 @@ func New(requestURL, requestKey string) (icc *IDCardChecker, err error) {
 	icc = &IDCardChecker{
 		APIUrl:   requestURL,
 		Key:      requestKey,
-		juheData: &JuheResponse{},
+		JuheData: &JuheResponse{},
 	}
 	icc.juheURL, err = url.Parse(icc.APIUrl)
 	if err != nil {
