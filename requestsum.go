@@ -11,7 +11,7 @@ type RequestCounter struct {
 	delayTime       int64
 }
 
-func NewRequestCounter(counter *map[string]uint8, bl *map[string]int64, maxRequestCount uint8, delayTime int64) *RequestCounter {
+func NewRequestCounter(counter *map[string]uint8, bl *map[string]int64, maxRequestCount uint8, delayTime int64, beClear bool) *RequestCounter {
 	if maxRequestCount == 0 || *counter == nil || len(*counter) != 0 || *bl == nil || len(*bl) != 0 {
 		return nil
 	}
@@ -21,7 +21,9 @@ func NewRequestCounter(counter *map[string]uint8, bl *map[string]int64, maxReque
 		maxRequestCount: maxRequestCount,
 		delayTime:       delayTime,
 	}
-	go rc.clearBlackList()
+	if beClear {
+		go rc.clearBlackList()
+	}
 	return rc
 }
 
