@@ -43,11 +43,11 @@ func (rc *RequestCounter) IsMoreRequst(id string) (err error) {
 		rc.ids[id]++
 		return
 	}
-	rc.addBlackList(id)
+	rc.AddBlackList(id)
 	return ErrorMoreRequest
 }
 
-func (rc *RequestCounter) addBlackList(id string) {
+func (rc *RequestCounter) AddBlackList(id string) {
 	if id == "" {
 		return
 	}
