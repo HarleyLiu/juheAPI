@@ -54,6 +54,13 @@ func (rc *RequestCounter) AddBlackList(id string) {
 	rc.blackList[id] = time.Now().Unix()
 }
 
+func (rc *RequestCounter) RemoveBlackList(id string) {
+	if id == "" {
+		return
+	}
+	delete(rc.blackList, id)
+}
+
 func (rc *RequestCounter) clearBlackList() {
 	for {
 		for k, v := range rc.blackList {
