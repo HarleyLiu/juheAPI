@@ -17,6 +17,7 @@ type IDCardChecker struct {
 	buf         []byte
 	resp        *http.Response
 	JuheData    *JuheResponse
+	rc          *RequestCounter
 }
 
 type JuheResponse struct {
@@ -37,8 +38,7 @@ const (
 )
 
 //New make a IdCardChecker
-func New(requestURL, requestKey string, maxRequest uint8) (icc *IDCardChecker, err error) {
-	maxRequestCount = maxRequest
+func New(requestURL, requestKey string, rc *RequestCounter) (icc *IDCardChecker, err error) {
 	if requestKey == "" {
 		return nil, ParamErrorNoKey
 	}
@@ -57,6 +57,7 @@ func New(requestURL, requestKey string, maxRequest uint8) (icc *IDCardChecker, e
 	}
 	icc.params = make(map[string][]string)
 	icc.params.Add("key", icc.Key)
+	icc.rc = rc
 	return
 }
 
@@ -134,8 +135,10 @@ func (icc *IDCardChecker) Check(mtd Method, userId, idCard, realName string) (pa
 		return false, ParamErrorNoUserId
 	}
 	//check request count
-	if err = isMoreRequst(userId); err != nil {
-		return false, err
+	if icc.rc != nil {
+		if err = icc.rc.IsMoreRequst(userId); err != nil {
+			return false, err
+		}
 	}
 	//check length
 	if len(idCard) != 18 { //consider	len(idCard)==15

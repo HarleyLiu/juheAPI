@@ -4,55 +4,60 @@ import (
 	"time"
 )
 
-const (
-	delayTime = 10 //second
-)
-
-var (
+type RequestCounter struct {
 	ids             map[string]uint8
 	blackList       map[string]int64
 	maxRequestCount uint8
-)
-
-func init() {
-	ids = make(map[string]uint8)
-	blackList = make(map[string]int64)
-	go clearBlackList()
+	delayTime       int64
 }
 
-func isMoreRequst(id string) (err error) {
+func NewRequestCounter(counter *map[string]uint8, bl *map[string]int64, maxRequestCount uint8, delayTime int64) *RequestCounter {
+	if maxRequestCount == 0 || *counter == nil || len(*counter) != 0 || *bl == nil || len(*bl) != 0 {
+		return nil
+	}
+	rc := &RequestCounter{
+		ids:             *counter,
+		blackList:       *bl,
+		maxRequestCount: maxRequestCount,
+		delayTime:       delayTime,
+	}
+	go rc.clearBlackList()
+	return rc
+}
+
+func (rc *RequestCounter) IsMoreRequst(id string) (err error) {
 	if id == "" {
 		return ErrorNoRequestID
 	}
-	if _, ok := blackList[id]; ok {
+	if _, ok := rc.blackList[id]; ok {
 		return ErrorMoreRequest
 	}
-	count, ok := ids[id]
+	count, ok := rc.ids[id]
 	if !ok {
-		ids[id] = 1
+		rc.ids[id] = 1
 		return
 	}
-	if count < maxRequestCount {
-		ids[id]++
+	if count < rc.maxRequestCount {
+		rc.ids[id]++
 		return
 	}
-	addBlackList(id)
+	rc.addBlackList(id)
 	return ErrorMoreRequest
 }
 
-func addBlackList(id string) {
+func (rc *RequestCounter) addBlackList(id string) {
 	if id == "" {
 		return
 	}
-	blackList[id] = time.Now().Unix()
+	rc.blackList[id] = time.Now().Unix()
 }
 
-func clearBlackList() {
+func (rc *RequestCounter) clearBlackList() {
 	for {
-		for k, v := range blackList {
-			if time.Now().Unix() > v+delayTime {
-				delete(ids, k)
-				delete(blackList, k)
+		for k, v := range rc.blackList {
+			if time.Now().Unix() > v+rc.delayTime {
+				delete(rc.ids, k)
+				delete(rc.blackList, k)
 			}
 		}
 		time.Sleep(time.Duration(1) * time.Second)

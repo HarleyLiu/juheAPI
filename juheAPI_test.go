@@ -7,7 +7,10 @@ import (
 )
 
 func Test_Cehck(t *testing.T) {
-	icc, err := New("http://op.juhe.cn/idcard/query", "eb90badasd8c1162312319203190231284", 3)
+	counter := make(map[string]uint8)
+	bl := make(map[string]int64)
+	rc := NewRequestCounter(&counter, &bl, 3, 60)
+	icc, err := New("http://op.juhe.cn/idcard/query", "eb90badasd8c1162312319203190231284", rc)
 	if err != nil {
 		log.Println("init icc obj fail", err)
 	}
@@ -23,7 +26,10 @@ func Test_Cehck(t *testing.T) {
 }
 
 func Test_MoreRequest(t *testing.T) {
-	icc, err := New("http://op.juhe.cn/idcard/query", "eb90badasd8c1162312319203190231284", 3)
+	counter := make(map[string]uint8)
+	bl := make(map[string]int64)
+	rc := NewRequestCounter(&counter, &bl, 3, 60)
+	icc, err := New("http://op.juhe.cn/idcard/query", "eb90badasd8c1162312319203190231284", rc)
 	if err != nil {
 		log.Println("init icc obj fail", err)
 	}
@@ -35,7 +41,10 @@ func Test_MoreRequest(t *testing.T) {
 }
 
 func Test_MoreRequestWithDelay(t *testing.T) {
-	icc, err := New("http://op.juhe.cn/idcard/query", "eb90badasd8c1162312319203190231284", 3)
+	counter := make(map[string]uint8)
+	bl := make(map[string]int64)
+	rc := NewRequestCounter(&counter, &bl, 3, 60)
+	icc, err := New("http://op.juhe.cn/idcard/query", "eb90badasd8c1162312319203190231284", rc)
 	if err != nil {
 		log.Println("init icc obj fail", err)
 	}
